@@ -1,0 +1,33 @@
+import requests
+from bs4 import BeautifulSoup
+import os
+import json
+
+path = './魯夫'
+if not os.path.exists(path):
+    os.mkdir(path)
+
+header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36'}
+
+count = 0
+
+for i in range(0,500):
+    if i % 48 == 0:
+        url = 'https://pic.sogou.com/napi/pc/searchList?mode=1&start='+str(i)+'&xml_len=48&query=%E9%AD%AF%E5%A4%AB'
+        
+        resp = requests.get(url,headers=header)
+        
+        json_string =str(resp.text)
+        js = json.loads(json_string)
+        
+        js1 = js['data']['items']
+        
+        
+        for i in js1:
+            count += 1
+            url1 = i['locImageLink']
+            resp1 = requests.get(url1,headers=header)
+            with open(path+str(count)+'.jpg','wb') as fobj:
+                fobj.write(resp1.content)        
+            print(count,url)
+            
